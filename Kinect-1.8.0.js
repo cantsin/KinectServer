@@ -256,6 +256,8 @@ var Kinect = (function () {
                 var name = eventData.name;
                 var args = eventData.args;
 
+                console.log(message);
+
                 switch (name) {
                     case "getInteractionInfoAtLocation":
                         var handlerResult = null;
@@ -1614,7 +1616,11 @@ var KinectUI = (function () {
 
                     updatePublicHandPointers();
                     break;
-
+                case "skeleton":
+                    // for(var i=0; i<20; i++) {
+                    //   console.log(streamFrame.skeletons[0].joints[i].position.x + ' ' + streamFrame.skeletons[0].joints[i].position.y + ' ' + streamFrame.skeletons[0].joints[i].position.z);
+                    // }
+                    break;
                 default:
                     if (bindableStreamNames[streamName]) {
                         // If this is one of the bindable stream names
