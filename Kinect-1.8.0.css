@@ -4,6 +4,87 @@
  * </copyright>                                                            *
  ***************************************************************************/
 
+html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI';
+}
+
+#uiContainer {
+    position: relative;
+    margin: 0 auto;
+    width: 100vw;
+    height: 100%;
+}
+
+#sampleName {
+    position: relative;
+    display: block;
+    text-align: right;
+    font-size: 16pt;
+    color: gray;
+    top: 24px;
+    margin-right: 26px;
+}
+
+#backgroundContainer {
+    position: absolute;
+    top: 80px;
+    width: 100vw;
+    height: 56.25vw;
+    margin-bottom: 26px;
+}
+
+@media screen and (max-width: 960px) {
+    #uiContainer {
+        width: 960px;
+    }
+
+    #backgroundContainer {
+        width: 960px;
+        height: 540px;
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    #uiContainer {
+        width: 1600px;
+    }
+
+    #backgroundContainer {
+        width: 1600px;
+        height: 900px;
+    }
+}
+
+#backgroundImg {
+    width: 100%;
+    height: 100%;
+}
+
+.streamImageCanvas {
+    position: absolute;
+    width: 75%;
+    height: 100%;
+    top: 0;
+    left: 12.5%;
+    opacity: 0.0;
+    transition: opacity 1.0s;
+}
+
+.streamImageCanvas.showing {
+    opacity: 1.0;
+    transition: opacity 1.0s;
+}
+
 .kinect-button {
     margin: 10px;
     display: inline-block;
@@ -57,7 +138,7 @@
     user-select: none;
     -webkit-user-select: none;
 }
-            
+
 .button-hover .kinect-button-surface {
     left: 0%;
     top: 0%;
