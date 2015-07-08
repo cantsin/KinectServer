@@ -1,3 +1,10 @@
+var KinectData = {
+  backgroundRemoval: undefined,
+  userViewer: undefined,
+  // skeletonData
+  // handCursor
+};
+
 $(document).ready(function () {
   var streamImageWidth = 640;
   var streamImageHeight = 480;
@@ -44,26 +51,6 @@ $(document).ready(function () {
     }
   }
 
-  // Show or hide a canvas element
-  function setCanvasVisibility(canvasElement, isVisible) {
-    if (canvasElement == null) {
-      return;
-    }
-
-    var canvasQuery = $(canvasElement);
-
-    if (isVisible) {
-      if (!canvasQuery.hasClass("showing")) {
-        // Clear canvas before showing it
-        var canvasContext = canvasElement.getContext("2d");
-        canvasContext.clearRect(0, 0, streamImageWidth, streamImageHeight);
-      }
-
-      canvasQuery.addClass("showing");
-    } else {
-      canvasQuery.removeClass("showing");
-    }
-  }
 
   // Update sensor state and perform UI transitions (showing/hiding appropriate UI elements)
   // related to sensor status or engagement state changes
@@ -89,8 +76,6 @@ $(document).ready(function () {
         immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "resolution": streamImageResolution };
 
         setCursorVisibility(newHasEngagedUser);
-        setCanvasVisibility(userViewerCanvasElement, !newHasEngagedUser);
-        setCanvasVisibility(backgroundRemovalCanvasElement, newHasEngagedUser);
 
         if (newHasEngagedUser) {
           immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].enabled = true;
@@ -117,8 +102,6 @@ $(document).ready(function () {
         }
       } else {
         setCursorVisibility(false);
-        setCanvasVisibility(userViewerCanvasElement, false);
-        setCanvasVisibility(backgroundRemovalCanvasElement, false);
       }
     }
 
@@ -148,46 +131,55 @@ $(document).ready(function () {
     updateUserState(isSensorConnected, newEngagedUser, sensor);
   }
 
-  // Create sensor and UI adapter layers
-  var sensor = Kinect.sensor(Kinect.DEFAULT_SENSOR_NAME, function (sensorToConfig, isConnected) {
-    if (isConnected) {
-      // Determine what is the engagement state upon connection
-      sensorToConfig.getConfig(function (data) {
-        console.log(data);
-        var engagedUserId = findEngagedUser(data[Kinect.INTERACTION_STREAM_NAME].userStates);
-        updateUserState(true, engagedUserId, sensorToConfig);
-      });
-    } else {
-      console.log("warning: could not connect to kinect sensor.")
-      updateUserState(false, engagedUser, sensorToConfig);
-    }
-  });
+  function initializeKinect() {
+    // Create sensor and UI adapter layers
+    var sensor = Kinect.sensor(Kinect.DEFAULT_SENSOR_NAME, function (sensorToConfig, isConnected) {
+      if (isConnected) {
+        // Determine what is the engagement state upon connection
+        sensorToConfig.getConfig(function (data) {
+          var engagedUserId = findEngagedUser(data[Kinect.INTERACTION_STREAM_NAME].userStates);
+          updateUserState(true, engagedUserId, sensorToConfig);
+        });
+      } else {
+        console.log("warning: could not connect to kinect sensor.")
+        updateUserState(false, engagedUser, sensorToConfig);
+      }
+    });
 
-  function sketch(processing) {
-    processing.draw = function() {},
-    processing.setup = function() {
-      var uiAdapter = KinectUI.createAdapter(sensor);
-      uiAdapter.promoteButtons();
-      cursor = uiAdapter.createDefaultCursor();
-      userViewerCanvasElement = document.getElementById("userViewerCanvas");
-      backgroundRemovalCanvasElement = document.getElementById("backgroundRemovalCanvas");
-      uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, userViewerCanvasElement);
-      uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, backgroundRemovalCanvasElement);
+    var uiAdapter = KinectUI.createAdapter(sensor);
+    cursor = uiAdapter.createDefaultCursor();
 
-      sensor.addEventHandler(function (event) {
-        switch (event.category) {
-        case Kinect.USERSTATE_EVENT_CATEGORY:
-          switch (event.eventType) {
-          case Kinect.USERSTATESCHANGED_EVENT_TYPE:
-            onUserStatesChanged(event.userStates);
-            break;
-          }
+    userViewerCanvasElement = document.getElementById("userViewerCanvas");
+    backgroundRemovalCanvasElement = document.getElementById("backgroundRemovalCanvas");
+    uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, userViewerCanvasElement);
+    uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, backgroundRemovalCanvasElement);
+
+    sensor.addEventHandler(function (event) {
+      switch (event.category) {
+      case Kinect.USERSTATE_EVENT_CATEGORY:
+        switch (event.eventType) {
+        case Kinect.USERSTATESCHANGED_EVENT_TYPE:
+          onUserStatesChanged(event.userStates);
           break;
         }
-      });
-    }
+        break;
+      }
+    });
   }
 
-  var canvas = document.getElementById("userViewerCanvas");
-  var processing = new Processing(canvas, sketch);
+  initializeKinect();
+
+  // load our processing library (.pde)
+  var req = new XMLHttpRequest();
+  req.overrideMimeType("text/html");
+  req.open("GET", "sample.pde");
+  req.onload = function() {
+    var canvas = document.getElementById("userViewerCanvas");
+    var p = new Processing(canvas, this.response);
+    // globals
+    KinectData.backgroundRemoval = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
+    KinectData.userViewer = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
+  };
+  req.error = function() {};
+  req.send();
 });

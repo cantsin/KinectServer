@@ -8,7 +8,8 @@ int delay = 16;
 
 // Setup the Processing Canvas
 void setup(){
-  size( 192, 240 );
+  //size( 192, 240 );
+  size( 640, 480 );
   strokeWeight( 10 );
   frameRate( 15 );
   X = width / 2;
@@ -19,6 +20,7 @@ void setup(){
 }
 
 // Main draw loop
+// takes in two parameters: kinect background, kinect person
 void draw(){
 
   radius = radius + sin( frameCount / 4 );
@@ -29,6 +31,7 @@ void draw(){
 
   // Fill canvas grey
   background( 100 );
+  image(KinectData.backgroundRemoval);
 
   // Set fill-color to blue
   fill( 0, 121, 184 );
@@ -45,3 +48,7 @@ void mouseMoved(){
   nX = mouseX;
   nY = mouseY;
 }
+
+// void kinectMoved() {
+
+// }

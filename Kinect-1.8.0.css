@@ -26,7 +26,8 @@ body {
 #sampleName {
     position: relative;
     display: block;
-    text-align: right;
+    left: 12.5%;
+    text-align: left;
     font-size: 16pt;
     color: gray;
     top: 24px;
@@ -43,8 +44,8 @@ body {
 
 .streamImageCanvas {
     position: absolute;
-    width: 192;
-    height: 240;
+    width: 640;
+    height: 480;
     top: 0;
     left: 12.5%;
     opacity: 1.0;
