@@ -1,23 +1,20 @@
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
-    <title>Kinect Web Basics</title>
+    <title>Kinect-Processing Demo</title>
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="processing-1.4.8.js"></script>
     <script type="text/javascript" src="Kinect-1.8.0.js"></script>
     <script type="text/javascript" src="demo.js"></script>
     <link rel="stylesheet" type="text/css" href="Kinect-1.8.0.css" />
-    <style type="text/css">
-    </style>
 </head>
 <body>
   <div id="uiContainer">
     <span id="sampleName">Kinect-Processing Demo</span>
     <div id="backgroundContainer">
-      <img id="backgroundImg" src="Images/beach.jpg"/>
-      <canvas id="processingCanvas" data-processing-sources="sample.pde"></canvas>
       <canvas id="userViewerCanvas" class="streamImageCanvas"></canvas>
       <canvas id="backgroundRemovalCanvas" class="streamImageCanvas"></canvas>
+      <canvas id="processingCanvas" data-processing-sources="sample.pde"></canvas>
     </div>
   </div>
 </body>

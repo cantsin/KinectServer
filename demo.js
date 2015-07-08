@@ -187,6 +187,6 @@ $(document).ready(function () {
     }
   }
 
-  var canvas = document.getElementById("userViewerCanvas");
+  var canvas = document.getElementById("processingCanvas");
   var processing = new Processing(canvas, sketch);
 });
