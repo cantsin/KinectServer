@@ -92,7 +92,7 @@ var Kinect = (function () {
         // Public SocketManager properties
 
         // connection retry timeout, in milliseconds
-        this.retryTimeout = 5000;
+        this.retryTimeout = 500;
 
         // true if socket has been started
         this.isStarted = false;
@@ -240,6 +240,7 @@ var Kinect = (function () {
             var eventSocketManager = new SocketManager(baseEndpointUri + "/events", function(socket, message) {
                 // Get the data in JSON format.
                 var eventData = JSON.parse(message.data);
+                // Object { oldValue: 2, newValue: 0, category: "userState", eventType: "primaryUserChanged" }
 
                 for (var iHandler = 0; iHandler < eventHandlers.length; ++iHandler) {
                     eventHandlers[iHandler](eventData);
@@ -256,7 +257,12 @@ var Kinect = (function () {
                 var name = eventData.name;
                 var args = eventData.args;
 
-                console.log(message);
+                // message { target: WebSocket, isTrusted: true, data:
+                // "{"name":"getInteractionInfoAtLocation","args":[87,"Right",4.0831441879272461,0.80624604225158691], "id":363}",
+                // origin: "ws://10.0.0.170:8181", lastEventId: "",
+                // currentTarget: WebSocket, eventPhase: 2, bubbles:
+                // false, cancelable: false, defaultPrevented: false,
+                // timeStamp: 1436374543017187 }
 
                 switch (name) {
                     case "getInteractionInfoAtLocation":

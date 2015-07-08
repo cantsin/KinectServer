@@ -153,11 +153,12 @@ $(document).ready(function () {
     if (isConnected) {
       // Determine what is the engagement state upon connection
       sensorToConfig.getConfig(function (data) {
+        console.log(data);
         var engagedUserId = findEngagedUser(data[Kinect.INTERACTION_STREAM_NAME].userStates);
-
         updateUserState(true, engagedUserId, sensorToConfig);
       });
     } else {
+      console.log("warning: could not connect to kinect sensor.")
       updateUserState(false, engagedUser, sensorToConfig);
     }
   });
@@ -187,6 +188,6 @@ $(document).ready(function () {
     }
   }
 
-  var canvas = document.getElementById("processingCanvas");
+  var canvas = document.getElementById("userViewerCanvas");
   var processing = new Processing(canvas, sketch);
 });

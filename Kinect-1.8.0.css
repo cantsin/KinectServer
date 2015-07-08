@@ -41,7 +41,7 @@ body {
     margin-bottom: 26px;
 }
 
-.streamImageCanvas, #processingCanvas {
+.streamImageCanvas {
     position: absolute;
     width: 192;
     height: 240;
