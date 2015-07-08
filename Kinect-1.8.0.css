@@ -70,7 +70,7 @@ body {
     height: 100%;
 }
 
-.streamImageCanvas {
+.streamImageCanvas, #processingCanvas {
     position: absolute;
     width: 75%;
     height: 100%;
