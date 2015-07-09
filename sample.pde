@@ -35,7 +35,7 @@ void draw(){
 
   // Fill canvas grey
   background( 100 );
-  //image(KinectData.silhouette);
+  image(KinectData.silhouette);
   image(KinectData.userViewer);
 
   // Set fill-color to blue

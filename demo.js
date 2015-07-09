@@ -6,9 +6,20 @@ var KinectData = {
   hand: undefined
 };
 
+var fps = 0;
 var streamImageWidth = 640;
 var streamImageHeight = 480;
 var engagedUser = null;
+
+var checkFps = function() {
+  setTimeout(function() {
+    console.log("fps is " + fps);
+    fps = 0;
+    checkFps();
+  }, 1000);
+}
+
+checkFps();
 
 $(document).ready(function () {
 
@@ -69,8 +80,6 @@ $(document).ready(function () {
 
   KinectData.initialize = function() {
 
-    console.log("Initializing Kinect.");
-
     // Create sensor and UI adapter layers
     sensor = Kinect.sensor(Kinect.DEFAULT_SENSOR_NAME, function (sensorToConfig, isConnected) {
       if (isConnected) {
@@ -79,9 +88,10 @@ $(document).ready(function () {
           var engagedUserId = findEngagedUser(data[Kinect.INTERACTION_STREAM_NAME].userStates);
           updateUserState(true, engagedUserId, sensorToConfig);
         });
+        console.log("Initializing Kinect.");
       } else {
-        console.log("warning: could not connect to kinect sensor.")
         updateUserState(false, engagedUser, sensorToConfig);
+        console.log("Warning: Could not connect to Kinect sensor.");
       }
     });
 

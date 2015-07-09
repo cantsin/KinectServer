@@ -862,6 +862,7 @@ var KinectUI = (function () {
                                 var canvasContext = metadata.canvas.sourceImg.getContext("2d");
                                 canvasContext.putImageData(event.data.imageData, 0, 0);
                                 metadata.isProcessing = false;
+                                fps++;
                                 break;
 
                             case "notProcessed":
