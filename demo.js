@@ -1,7 +1,7 @@
 var KinectData = {
   initialize: undefined,
-  backgroundRemoval: undefined,
   userViewer: undefined,
+  silhouette: undefined,
   skeletonData: undefined,
   handLocation: undefined
 };
@@ -81,12 +81,12 @@ $(document).ready(function () {
           immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].enabled = true;
           immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].trackingId = newEngagedUser;
 
-          delayedConfig[Kinect.USERVIEWER_STREAM_NAME] = { "enabled": false };
+          //delayedConfig[Kinect.USERVIEWER_STREAM_NAME] = { "enabled": false };
         } else {
           immediateConfig[Kinect.USERVIEWER_STREAM_NAME].enabled = true;
 
           if (hasEngagedUser) {
-            delayedConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "enabled": false };
+            //delayedConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "enabled": false };
           }
         }
 
@@ -152,8 +152,8 @@ $(document).ready(function () {
     var uiAdapter = KinectUI.createAdapter(sensor);
     cursor = uiAdapter.createDefaultCursor();
 
-    uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, KinectData.userViewer);
-    uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, KinectData.backgroundRemoval);
+    uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, KinectData.silhouette);
+    uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, KinectData.userViewer);
 
     sensor.addEventHandler(function (event) {
       switch (event.category) {
@@ -170,7 +170,7 @@ $(document).ready(function () {
 
   // globals
   var p = new Processing();
-  KinectData.backgroundRemoval = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
+  KinectData.silhouette = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
   KinectData.userViewer = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
 
   // load our processing library (.pde)
