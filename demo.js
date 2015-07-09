@@ -8,21 +8,15 @@ var KinectData = {
 
 var streamImageWidth = 640;
 var streamImageHeight = 480;
+var engagedUser = null;
 
 $(document).ready(function () {
 
   var streamImageResolution = streamImageWidth.toString() + "x" + streamImageHeight.toString();
   var isSensorConnected = false;
-  var engagedUser = null;
   var sensor = null;
 
-  // Log errors encountered during sensor configuration
-  function configError(statusText, errorData) {
-    console.log((errorData != null) ? JSON.stringify(errorData) : statusText);
-  }
-
-  // Update sensor state and perform UI transitions (showing/hiding appropriate UI elements)
-  // related to sensor status or engagement state changes
+  // Update sensor state.
   function updateUserState(newIsSensorConnected, newEngagedUser, sensorToConfig) {
     var hasEngagedUser = engagedUser != null;
     var newHasEngagedUser = newEngagedUser != null;
@@ -33,19 +27,17 @@ $(document).ready(function () {
         var immediateConfig = {};
         immediateConfig[Kinect.INTERACTION_STREAM_NAME] = { "enabled": true };
         immediateConfig[Kinect.SKELETON_STREAM_NAME] = { "enabled": true };
-        immediateConfig[Kinect.USERVIEWER_STREAM_NAME] = { "resolution": streamImageResolution };
-        immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "resolution": streamImageResolution };
+        immediateConfig[Kinect.USERVIEWER_STREAM_NAME] = { "resolution": streamImageResolution, "enabled": true };
+        immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "resolution": streamImageResolution, "enabled": true };
 
         if (newHasEngagedUser) {
-          immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].enabled = true;
           immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].trackingId = newEngagedUser;
-        } else {
-          immediateConfig[Kinect.USERVIEWER_STREAM_NAME].enabled = true;
         }
 
         // Perform immediate configuration
-        sensorToConfig.postConfig(immediateConfig, configError);
-      } else {
+        sensorToConfig.postConfig(immediateConfig, function (statusText, errorData) {
+          console.log((errorData != null) ? JSON.stringify(errorData) : statusText);
+        });
       }
     }
 

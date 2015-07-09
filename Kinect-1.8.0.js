@@ -1444,9 +1444,12 @@ var KinectUI = (function () {
                     updatePublicHandPointers();
                     break;
                 case "skeleton":
-                    // for(var i=0; i<20; i++) {
-                    //   console.log(streamFrame.skeletons[0].joints[i].position.x + ' ' + streamFrame.skeletons[0].joints[i].position.y + ' ' + streamFrame.skeletons[0].joints[i].position.z);
-                    // }
+                    for(var i=0; i<20; i++) {
+                      if(streamFrame.skeletons[i].trackingId == engagedUser) {
+                        KinectData.skeletonData = streamFrame.skeletons[i];
+                        break;
+                      }
+                    }
                     break;
                 default:
                     if (bindableStreamNames[streamName]) {
