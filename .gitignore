@@ -1,0 +1,6 @@
+bin/
+obj/
+AnyCPU.Release/
+AnyCPU.Debug/
+.Debug/
+.Release/
