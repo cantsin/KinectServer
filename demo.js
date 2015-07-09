@@ -1,19 +1,23 @@
+
+// Kinect data, updated approximately 60 times per second. Because
+// this variable is global, it can be accessed by processing.js
+// scripts.
 var KinectData = {
   initialize: undefined,
-  userViewer: undefined,
-  silhouette: undefined,
-  skeletonData: undefined,
-  hand: undefined
+  userid: null, // the primary user id (as detected by the Kinect)
+  userViewer: undefined, // the primary user itself (minus the background)
+  silhouette: undefined, // the silhouette of the primary user (useful for background or shape detection)
+  skeletonData: undefined, // the primary user's skeleton data
+  hand: undefined, // the left or right hand of the user
+  fps: 0,
+  width: 640,
+  height: 480,
 };
 
-var fps = 0;
-var streamImageWidth = 640;
-var streamImageHeight = 480;
-var engagedUser = null;
-
+// rudimentary FPS counter.
 var checkFps = function() {
   setTimeout(function() {
-    fps = 0;
+    KinectData.fps = 0;
     checkFps();
   }, 1000);
 }
@@ -22,16 +26,16 @@ checkFps();
 
 $(document).ready(function () {
 
-  var streamImageResolution = streamImageWidth.toString() + "x" + streamImageHeight.toString();
+  var streamImageResolution = KinectData.width.toString() + "x" + KinectData.height.toString();
   var isSensorConnected = false;
   var sensor = null;
 
   // Update sensor state.
   function updateUserState(newIsSensorConnected, newEngagedUser, sensorToConfig) {
-    var hasEngagedUser = engagedUser != null;
+    var hasEngagedUser = KinectData.userid != null;
     var newHasEngagedUser = newEngagedUser != null;
 
-    if ((isSensorConnected != newIsSensorConnected) || (engagedUser != newEngagedUser)) {
+    if ((isSensorConnected != newIsSensorConnected) || (KinectData.userid != newEngagedUser)) {
       if (newIsSensorConnected) {
 
         var immediateConfig = {};
@@ -52,7 +56,7 @@ $(document).ready(function () {
     }
 
     isSensorConnected = newIsSensorConnected;
-    engagedUser = newEngagedUser;
+    KinectData.userid = newEngagedUser;
   }
 
   // Get the id of the engaged user, if present, or null if there is no engaged user
@@ -89,7 +93,7 @@ $(document).ready(function () {
         });
         console.log("Initializing Kinect.");
       } else {
-        updateUserState(false, engagedUser, sensorToConfig);
+        updateUserState(false, KinectData.userid, sensorToConfig);
         console.log("Warning: Could not connect to Kinect sensor.");
       }
     });
@@ -114,8 +118,8 @@ $(document).ready(function () {
 
   // globals
   var p = new Processing();
-  KinectData.silhouette = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
-  KinectData.userViewer = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
+  KinectData.silhouette = new p.PImage(KinectData.width, KinectData.height, p.PConstants.RGBA);
+  KinectData.userViewer = new p.PImage(KinectData.width, KinectData.height, p.PConstants.RGBA);
 
   // load our processing library (.pde)
   var req = new XMLHttpRequest();

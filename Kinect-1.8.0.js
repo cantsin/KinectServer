@@ -862,7 +862,7 @@ var KinectUI = (function () {
                                 var canvasContext = metadata.canvas.sourceImg.getContext("2d");
                                 canvasContext.putImageData(event.data.imageData, 0, 0);
                                 metadata.isProcessing = false;
-                                fps++;
+                                KinectData.fps++;
                                 break;
 
                             case "notProcessed":
@@ -970,12 +970,12 @@ var KinectUI = (function () {
         }
 
         function interactionZoneToWindow(point) {
-            return { "x": ((point.x / 4.0) * streamImageWidth) + (streamImageWidth / 2),
-                     "y": ((point.y / 4.0) * streamImageHeight) + (streamImageHeight / 2) };
+            return { "x": ((point.x / 4.0) * KinectData.width) + (KinectData.width / 2),
+                     "y": ((point.y / 4.0) * KinectData.height) + (KinectData.height / 2) };
         }
 
         function windowToInteractionZone(point) {
-            return { "x": point.x / streamImageWidth, "y": point.y / streamImageHeight };
+            return { "x": point.x / KinectData.width, "y": point.y / KinectData.height };
         }
 
         function areUserInterfaceValuesClose(a, b) {
@@ -1446,7 +1446,7 @@ var KinectUI = (function () {
                     break;
                 case "skeleton":
                     for(var i=0; i<streamFrame.length; i++) {
-                      if(streamFrame.skeletons[i].trackingId == engagedUser) {
+                      if(streamFrame.skeletons[i].trackingId == KinectData.userid) {
                         KinectData.skeletonData = streamFrame.skeletons[i];
                         break;
                       }
