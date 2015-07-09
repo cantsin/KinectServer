@@ -1,10 +1,13 @@
 // this is the demo from http://processingjs.org/learning/
+// modified for kinect usage.
 
 // Global variables
 float radius = 50.0;
 int X, Y;
 int nX, nY;
-int delay = 16;
+int delay = 1;//was 16
+int maxX, maxY = 0;
+int minX, minY = 0;
 
 // Setup the Processing Canvas
 void setup(){
@@ -32,7 +35,7 @@ void draw(){
 
   // Fill canvas grey
   background( 100 );
-  image(KinectData.silhouette);
+  //image(KinectData.silhouette);
   image(KinectData.userViewer);
 
   // Set fill-color to blue
@@ -43,10 +46,15 @@ void draw(){
 
   // Draw circle
   ellipse( X, Y, radius, radius );
-}
 
-// Set circle's next destination
-void mouseMoved(){
-  nX = mouseX;
-  nY = mouseY;
+  // follow the hand of user
+  if(KinectData.hand && KinectData.hand.isActive) {
+      nX = KinectData.hand.x;
+      nY = KinectData.hand.y;
+      maxX = max(nX, maxX);
+      maxY = max(nY, maxY);
+      minX = min(nX, minX);
+      minY = min(nY, minY);
+      println("KinectData.hand extents are " + minX + ", " + minY + " to " + maxX + ", " + maxY);
+  }
 }

@@ -718,6 +718,8 @@ var KinectUI = (function () {
             this.originalHandPointer = null;
             this.updated = false;
 
+            KinectData.hand = this;
+
             //////////////////////////////////////////////////////////////
             // Public HandPointer methods
 
@@ -806,6 +808,8 @@ var KinectUI = (function () {
                 this.rawX = streamHandPointer.rawX;
                 this.rawY = streamHandPointer.rawY;
                 this.rawZ = streamHandPointer.rawZ;
+
+                KinectData.hand = this;
 
                 return {
                     "pressedChanged": pressedChanged,
@@ -965,11 +969,12 @@ var KinectUI = (function () {
         }
 
         function interactionZoneToWindow(point) {
-            return { "x": point.x * window.innerWidth, "y": point.y * window.innerHeight };
+            return { "x": ((point.x / 4.0) * streamImageWidth) + (streamImageWidth / 2),
+                     "y": ((point.y / 4.0) * streamImageHeight) + (streamImageHeight / 2) };
         }
 
         function windowToInteractionZone(point) {
-            return { "x": point.x / window.innerWidth, "y": point.y / window.innerHeight };
+            return { "x": point.x / streamImageWidth, "y": point.y / streamImageHeight };
         }
 
         function areUserInterfaceValuesClose(a, b) {

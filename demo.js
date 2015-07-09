@@ -3,17 +3,17 @@ var KinectData = {
   userViewer: undefined,
   silhouette: undefined,
   skeletonData: undefined,
-  handLocation: undefined
+  hand: undefined
 };
 
-$(document).ready(function () {
-  var streamImageWidth = 640;
-  var streamImageHeight = 480;
-  var streamImageResolution = streamImageWidth.toString() + "x" + streamImageHeight.toString();
+var streamImageWidth = 640;
+var streamImageHeight = 480;
 
+$(document).ready(function () {
+
+  var streamImageResolution = streamImageWidth.toString() + "x" + streamImageHeight.toString();
   var isSensorConnected = false;
   var engagedUser = null;
-  var cursor = null;
   var sensor = null;
 
   // Log errors encountered during sensor configuration
@@ -21,87 +21,31 @@ $(document).ready(function () {
     console.log((errorData != null) ? JSON.stringify(errorData) : statusText);
   }
 
-  // Determine if the specified object has any properties or not
-  function isEmptyObject(obj) {
-    if (obj == null) {
-      return true;
-    }
-
-    var numProperties = 0;
-
-    for (var prop in obj) {
-      if (obj.hasOwnProperty(prop)) {
-        ++numProperties;
-      }
-    }
-
-    return numProperties <= 0;
-  }
-
-  // Show or hide the cursor
-  function setCursorVisibility(isVisible) {
-    if (cursor == null) {
-      return;
-    }
-
-    if (isVisible) {
-      cursor.show();
-    } else {
-      cursor.hide();
-    }
-  }
-
-
   // Update sensor state and perform UI transitions (showing/hiding appropriate UI elements)
   // related to sensor status or engagement state changes
-  var delayedConfigTimeoutId = null;
   function updateUserState(newIsSensorConnected, newEngagedUser, sensorToConfig) {
     var hasEngagedUser = engagedUser != null;
     var newHasEngagedUser = newEngagedUser != null;
-
-    // If there's a pending configuration change when state changes again, cancel previous timeout
-    if (delayedConfigTimeoutId != null) {
-      clearTimeout(delayedConfigTimeoutId);
-      delayedConfigTimeoutId = null;
-    }
 
     if ((isSensorConnected != newIsSensorConnected) || (engagedUser != newEngagedUser)) {
       if (newIsSensorConnected) {
 
         var immediateConfig = {};
-        var delayedConfig = {};
         immediateConfig[Kinect.INTERACTION_STREAM_NAME] = { "enabled": true };
         immediateConfig[Kinect.SKELETON_STREAM_NAME] = { "enabled": true };
         immediateConfig[Kinect.USERVIEWER_STREAM_NAME] = { "resolution": streamImageResolution };
         immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "resolution": streamImageResolution };
 
-        setCursorVisibility(newHasEngagedUser);
-
         if (newHasEngagedUser) {
           immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].enabled = true;
           immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].trackingId = newEngagedUser;
-
-          //delayedConfig[Kinect.USERVIEWER_STREAM_NAME] = { "enabled": false };
         } else {
           immediateConfig[Kinect.USERVIEWER_STREAM_NAME].enabled = true;
-
-          if (hasEngagedUser) {
-            //delayedConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "enabled": false };
-          }
         }
 
         // Perform immediate configuration
         sensorToConfig.postConfig(immediateConfig, configError);
-
-        // schedule delayed configuration for 2 seconds later
-        if (!isEmptyObject(delayedConfig)) {
-          delayedConfigTimeoutId = setTimeout(function () {
-            sensorToConfig.postConfig(delayedConfig, configError);
-            delayedConfigTimeoutId = null;
-          }, 2000);
-        }
       } else {
-        setCursorVisibility(false);
       }
     }
 
@@ -150,7 +94,6 @@ $(document).ready(function () {
     });
 
     var uiAdapter = KinectUI.createAdapter(sensor);
-    cursor = uiAdapter.createDefaultCursor();
 
     uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, KinectData.silhouette);
     uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, KinectData.userViewer);
