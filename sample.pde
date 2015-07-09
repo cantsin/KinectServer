@@ -51,10 +51,5 @@ void draw(){
   if(KinectData.hand && KinectData.hand.isActive) {
       nX = KinectData.hand.x;
       nY = KinectData.hand.y;
-      maxX = max(nX, maxX);
-      maxY = max(nY, maxY);
-      minX = min(nX, minX);
-      minY = min(nY, minY);
-      println("KinectData.hand extents are " + minX + ", " + minY + " to " + maxX + ", " + maxY);
   }
 }

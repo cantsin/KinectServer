@@ -13,7 +13,6 @@ var engagedUser = null;
 
 var checkFps = function() {
   setTimeout(function() {
-    console.log("fps is " + fps);
     fps = 0;
     checkFps();
   }, 1000);
