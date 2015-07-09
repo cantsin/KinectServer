@@ -1,32 +1,9 @@
 
-// Kinect data, updated approximately 60 times per second. Because
-// this variable is global, it can be accessed by processing.js
-// scripts.
-var KinectData = {
-  initialize: undefined,
-  userid: null, // the primary user id (as detected by the Kinect)
-  userViewer: undefined, // the primary user itself (minus the background)
-  silhouette: undefined, // the silhouette of the primary user (useful for background or shape detection)
-  skeletonData: undefined, // the primary user's skeleton data
-  hand: undefined, // the left or right hand of the user
-  fps: 0,
-  width: 640,
-  height: 480,
-};
+var KinectData = (function() {
 
-// rudimentary FPS counter.
-var checkFps = function() {
-  setTimeout(function() {
-    KinectData.fps = 0;
-    checkFps();
-  }, 1000);
-}
-
-checkFps();
-
-$(document).ready(function () {
-
-  var streamImageResolution = KinectData.width.toString() + "x" + KinectData.height.toString();
+  var width = 640;
+  var height = 480;
+  var resolution = width.toString() + "x" + height.toString();
   var isSensorConnected = false;
   var sensor = null;
 
@@ -38,18 +15,18 @@ $(document).ready(function () {
     if ((isSensorConnected != newIsSensorConnected) || (KinectData.userid != newEngagedUser)) {
       if (newIsSensorConnected) {
 
-        var immediateConfig = {};
-        immediateConfig[Kinect.INTERACTION_STREAM_NAME] = { "enabled": true };
-        immediateConfig[Kinect.SKELETON_STREAM_NAME] = { "enabled": true };
-        immediateConfig[Kinect.USERVIEWER_STREAM_NAME] = { "resolution": streamImageResolution, "enabled": true };
-        immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "resolution": streamImageResolution, "enabled": true };
+        var config = {};
+        config[Kinect.INTERACTION_STREAM_NAME] = { "enabled": true };
+        config[Kinect.SKELETON_STREAM_NAME] = { "enabled": true };
+        config[Kinect.USERVIEWER_STREAM_NAME] = { "resolution": resolution, "enabled": true };
+        config[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "resolution": resolution, "enabled": true };
 
         if (newHasEngagedUser) {
-          immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].trackingId = newEngagedUser;
+          config[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].trackingId = newEngagedUser;
         }
 
         // Perform immediate configuration
-        sensorToConfig.postConfig(immediateConfig, function (statusText, errorData) {
+        sensorToConfig.postConfig(config, function (statusText, errorData) {
           console.log((errorData != null) ? JSON.stringify(errorData) : statusText);
         });
       }
@@ -81,7 +58,7 @@ $(document).ready(function () {
     updateUserState(isSensorConnected, newEngagedUser, sensor);
   }
 
-  KinectData.initialize = function() {
+  function initialize() {
 
     // Create sensor and UI adapter layers
     sensor = Kinect.sensor(Kinect.DEFAULT_SENSOR_NAME, function (sensorToConfig, isConnected) {
@@ -116,18 +93,45 @@ $(document).ready(function () {
     });
   }
 
-  // globals
+  // Kinect data, updated 60 times per second. Because this variable
+  // will be global, it can be accessed by processing.js scripts.
+  return {
+    width: width,
+    height: height,
+    initialize: initialize,
+    userid: null,            // the primary user id (as detected by the Kinect)
+    userViewer: undefined,   // the primary user itself (minus the background)
+    silhouette: undefined,   // the silhouette of the primary user (useful for background or shape detection)
+    skeletonData: undefined, // the primary user's skeleton data
+    hand: undefined,         // the left or right hand of the user
+    fps: 0,
+  };
+})();
+
+// rudimentary FPS counter.
+var checkFps = function() {
+  setTimeout(function() {
+    KinectData.fps = 0;
+    checkFps();
+  }, 1000);
+}
+
+checkFps();
+
+// when we're ready, load our processing library (.pde)
+$(document).ready(function () {
+  // create canvas buffers (PImages) for incoming Kinect data. this
+  // must be done before KinectData.initialize is called, so we set up
+  // the PImages as early as possible.
   var p = new Processing();
   KinectData.silhouette = new p.PImage(KinectData.width, KinectData.height, p.PConstants.RGBA);
   KinectData.userViewer = new p.PImage(KinectData.width, KinectData.height, p.PConstants.RGBA);
-
-  // load our processing library (.pde)
   var req = new XMLHttpRequest();
-  req.overrideMimeType("text/html");
+  req.overrideMimeType("text/plain");
   req.open("GET", "sample.pde");
   req.onload = function() {
     var canvas = document.getElementById("processingCanvas");
-    var p = new Processing(canvas, this.response);
+    var main = new Processing(canvas, this.response);
   };
   req.error = function() {};
   req.send();
