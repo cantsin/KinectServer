@@ -1,8 +1,9 @@
 var KinectData = {
+  initialize: undefined,
   backgroundRemoval: undefined,
   userViewer: undefined,
-  // skeletonData
-  // handCursor
+  skeletonData: undefined,
+  handLocation: undefined
 };
 
 $(document).ready(function () {
@@ -13,8 +14,7 @@ $(document).ready(function () {
   var isSensorConnected = false;
   var engagedUser = null;
   var cursor = null;
-  var userViewerCanvasElement = null;
-  var backgroundRemovalCanvasElement = null;
+  var sensor = null;
 
   // Log errors encountered during sensor configuration
   function configError(statusText, errorData) {
@@ -131,9 +131,12 @@ $(document).ready(function () {
     updateUserState(isSensorConnected, newEngagedUser, sensor);
   }
 
-  function initializeKinect() {
+  KinectData.initialize = function() {
+
+    console.log("Initializing Kinect.");
+
     // Create sensor and UI adapter layers
-    var sensor = Kinect.sensor(Kinect.DEFAULT_SENSOR_NAME, function (sensorToConfig, isConnected) {
+    sensor = Kinect.sensor(Kinect.DEFAULT_SENSOR_NAME, function (sensorToConfig, isConnected) {
       if (isConnected) {
         // Determine what is the engagement state upon connection
         sensorToConfig.getConfig(function (data) {
@@ -149,10 +152,8 @@ $(document).ready(function () {
     var uiAdapter = KinectUI.createAdapter(sensor);
     cursor = uiAdapter.createDefaultCursor();
 
-    userViewerCanvasElement = document.getElementById("userViewerCanvas");
-    backgroundRemovalCanvasElement = document.getElementById("backgroundRemovalCanvas");
-    uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, userViewerCanvasElement);
-    uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, backgroundRemovalCanvasElement);
+    uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, KinectData.userViewer);
+    uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, KinectData.backgroundRemoval);
 
     sensor.addEventHandler(function (event) {
       switch (event.category) {
@@ -167,18 +168,18 @@ $(document).ready(function () {
     });
   }
 
-  initializeKinect();
+  // globals
+  var p = new Processing();
+  KinectData.backgroundRemoval = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
+  KinectData.userViewer = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
 
   // load our processing library (.pde)
   var req = new XMLHttpRequest();
   req.overrideMimeType("text/html");
   req.open("GET", "sample.pde");
   req.onload = function() {
-    var canvas = document.getElementById("userViewerCanvas");
+    var canvas = document.getElementById("processingCanvas");
     var p = new Processing(canvas, this.response);
-    // globals
-    KinectData.backgroundRemoval = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
-    KinectData.userViewer = new p.PImage(streamImageWidth, streamImageHeight, p.PConstants.RGBA);
   };
   req.error = function() {};
   req.send();

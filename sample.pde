@@ -8,6 +8,7 @@ int delay = 16;
 
 // Setup the Processing Canvas
 void setup(){
+  KinectData.initialize()
   //size( 192, 240 );
   size( 640, 480 );
   strokeWeight( 10 );
@@ -48,7 +49,3 @@ void mouseMoved(){
   nX = mouseX;
   nY = mouseY;
 }
-
-// void kinectMoved() {
-
-// }

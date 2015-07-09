@@ -855,7 +855,7 @@ var KinectUI = (function () {
                         switch (event.data.message) {
                             case "imageReady":
                                 // Put ready image data in associated canvas
-                                var canvasContext = metadata.canvas.getContext("2d");
+                                var canvasContext = metadata.canvas.sourceImg.getContext("2d");
                                 canvasContext.putImageData(event.data.imageData, 0, 0);
                                 metadata.isProcessing = false;
                                 break;
@@ -900,7 +900,7 @@ var KinectUI = (function () {
                     // Whenever the image width or height changes, update image tracking metadata
                     // and canvas ImageData associated with worker thread
 
-                    var canvasContext = metadata.canvas.getContext("2d");
+                    var canvasContext = metadata.canvas.sourceImg.getContext("2d");
                     var imageData = canvasContext.createImageData(width, height);
                     metadata.width = width;
                     metadata.height = height;
@@ -1582,10 +1582,6 @@ var KinectUI = (function () {
         this.bindStreamToCanvas = function (streamName, canvas, width, height) {
             if (!bindableStreamNames[streamName]) {
                 throw new Error("first parameter must be specified and must be one of the supported stream names");
-            }
-
-            if (!(canvas instanceof HTMLCanvasElement)) {
-                throw new Error("second parameter must be specified and must be a canvas element");
             }
 
             this.unbindStreamFromCanvas(streamName);
