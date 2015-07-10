@@ -102,7 +102,7 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor
         private static readonly Size[] UserViewerSupportedResolutions =
         {
             new Size(640, 480), new Size(320, 240), new Size(160, 120),
-            new Size(128, 96), new Size(80, 60)
+            new Size(128, 96), new Size(80, 60),
         };
 
         /// <summary>
@@ -839,9 +839,10 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor
                 try
                 {
                     this.userViewerColorizer.ColorizeDepthPixels(depthData, depthFrame.Width, depthFrame.Height);
+
                     this.userViewerStreamMessage.timestamp = depthFrame.Timestamp;
-                    this.userViewerStreamMessage.width = this.userViewerColorizer.Width;
-                    this.userViewerStreamMessage.height = this.userViewerColorizer.Height;
+                    this.userViewerStreamMessage.width = 192;
+                    this.userViewerStreamMessage.height = 320;
                     this.userViewerStreamMessage.bufferLength = this.userViewerColorizer.Buffer.Length;
 
                     await this.ownerContext.SendTwoPartStreamMessageAsync(this.userViewerStreamMessage, this.userViewerColorizer.Buffer);

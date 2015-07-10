@@ -518,8 +518,6 @@ namespace Microsoft.Samples.Kinect.Webserver
             /// </returns>
             private bool HandleCrossOrigin(HttpListenerContext context)
             {
-                Trace.TraceError("HandleCrossOrigin hit.");
-
                 const string OriginHeader = "Origin";
                 const string AllowOriginHeader = "Access-Control-Allow-Origin";
                 const string RequestHeadersHeader = "Access-Control-Request-Headers";

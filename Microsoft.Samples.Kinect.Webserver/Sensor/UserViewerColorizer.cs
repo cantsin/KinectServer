@@ -82,7 +82,7 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor
                 this.Width = width;
                 this.Height = height;
 
-                this.Buffer = new byte[width * height * BytesPerPixel];
+                this.Buffer = new byte[192 * 320 * BytesPerPixel];
             }
         }
 
@@ -140,8 +140,11 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor
             int downscaleFactor = depthWidth / this.Width;
             Debug.Assert(depthHeight / this.Height == downscaleFactor, "Downscale factor in x and y dimensions should be exactly the same.");
 
-            int pixelDisplacementBetweenRows = depthWidth * downscaleFactor;
+            int pixelDisplacementBetweenRows = depthWidth;
 
+            // resize to 192x320
+            // from 640x480, cut 224 off each left/right side; 80 each top/bottom.
+            // EDIT: don't cut off top 80, leave as-is.
             unsafe
             {
                 fixed (byte* colorBufferPtr = this.Buffer)
@@ -153,15 +156,15 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor
                             // Write color values using int pointers instead of byte pointers,
                             // since each color pixel is 32-bits wide.
                             int* colorBufferIntPtr = (int*)colorBufferPtr;
-                            DepthImagePixel* currentPixelRowPtr = depthImagePixelPtr;
+                            DepthImagePixel* currentPixelRowPtr = depthImagePixelPtr + 224;
 
-                            for (int row = 0; row < depthHeight; row += downscaleFactor)
+                            for (int row = 0; row < 320; row += 1)
                             {
                                 DepthImagePixel* currentPixelPtr = currentPixelRowPtr;
-                                for (int column = 0; column < depthWidth; column += downscaleFactor)
+                                for (int column = 0; column < 192; column += 1)
                                 {
                                     *colorBufferIntPtr++ = playerColorLookupPtr[currentPixelPtr->PlayerIndex];
-                                    currentPixelPtr += downscaleFactor;
+                                    currentPixelPtr += 1;
                                 }
 
                                 currentPixelRowPtr += pixelDisplacementBetweenRows;
