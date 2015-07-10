@@ -2,7 +2,7 @@
 // modified for kinect usage.
 
 // Global variables
-float radius = 50.0;
+float radius = 10.0;
 int X, Y;
 int nX, nY;
 int delay = 1;//was 16
@@ -12,9 +12,8 @@ int minX, minY = 0;
 // Setup the Processing Canvas
 void setup(){
   KinectData.initialize()
-  //size( 192, 240 );
-  size( 640, 480 );
-  strokeWeight( 10 );
+  size( 192, 320 );
+  strokeWeight( 2 );
   frameRate( 15 );
   X = width / 2;
   Y = height / 2;

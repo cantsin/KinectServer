@@ -96,8 +96,8 @@ var KinectData = (function() {
   // Kinect data, updated 60 times per second. Because this variable
   // will be global, it can be accessed by processing.js scripts.
   return {
-    width: width,
-    height: height,
+    width: 192,
+    height: 320,
     initialize: initialize,
     userid: null,            // the primary user id (as detected by the Kinect)
     userViewer: undefined,   // the primary user itself (minus the background)
@@ -108,15 +108,15 @@ var KinectData = (function() {
   };
 })();
 
-// rudimentary FPS counter.
-var checkFps = function() {
+// rudimentary Kinect FPS counter.
+var checkKinectFps = function() {
   setTimeout(function() {
     KinectData.fps = 0;
-    checkFps();
+    checkKinectFps();
   }, 1000);
 }
 
-checkFps();
+checkKinectFps();
 
 // when we're ready, load our processing library (.pde)
 $(document).ready(function () {
