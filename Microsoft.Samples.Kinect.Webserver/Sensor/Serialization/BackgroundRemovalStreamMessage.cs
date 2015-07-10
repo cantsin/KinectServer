@@ -56,9 +56,9 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor.Serialization
             }
 
             this.timestamp = frame.Timestamp;
-            this.width = frame.Width;
-            this.height = frame.Height;
-            this.bufferLength = frame.PixelDataLength;
+            this.width = 192;
+            this.height = 320;
+            this.bufferLength = 192 * 320 * 4;
             this.trackedPlayerId = frame.TrackedPlayerId;
             this.averageDepth = frame.AverageDepth;
 
@@ -67,6 +67,9 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor.Serialization
                 this.Buffer = new byte[this.bufferLength];
             }
 
+            // resize to 192x320
+            // from 640x480, cut 224 off each left/right side; 80 each top/bottom.
+            // EDIT: don't cut off top 80, leave as-is.
             unsafe
             {
                 fixed (byte* messageDataPtr = this.Buffer)
@@ -76,17 +79,25 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor.Serialization
                         byte* messageDataPixelPtr = messageDataPtr;
                         byte* frameDataPixelPtr = frameDataPtr;
 
-                        byte* messageDataPixelPtrEnd = messageDataPixelPtr + this.bufferLength;
+                        // Write color values using int pointers instead of byte pointers,
+                        // since each color pixel is 32-bits wide.
+                        byte* currentPixelRowPtr = frameDataPixelPtr + 224 * 4;
 
-                        while (messageDataPixelPtr != messageDataPixelPtrEnd)
+                        for (int row = 0; row < 320; row += 1)
                         {
-                            // Convert from BGRA to RGBA format
-                            *(messageDataPixelPtr++) = *(frameDataPixelPtr + 2);
-                            *(messageDataPixelPtr++) = *(frameDataPixelPtr + 1);
-                            *(messageDataPixelPtr++) = *frameDataPixelPtr;
-                            *(messageDataPixelPtr++) = *(frameDataPixelPtr + 3);
+                            byte* currentPixelPtr = currentPixelRowPtr;
+                            for (int column = 0; column < 192; column += 1)
+                            {
+                                // Convert from BGRA to RGBA format
+                                *(messageDataPixelPtr++) = *(currentPixelPtr + 2);
+                                *(messageDataPixelPtr++) = *(currentPixelPtr + 1);
+                                *(messageDataPixelPtr++) = *currentPixelPtr;
+                                *(messageDataPixelPtr++) = *(currentPixelPtr + 3);
 
-                            frameDataPixelPtr += BytesPerPixel;
+                                currentPixelPtr += BytesPerPixel;
+                            }
+
+                            currentPixelRowPtr += 640 * 4;
                         }
                     }
                 }

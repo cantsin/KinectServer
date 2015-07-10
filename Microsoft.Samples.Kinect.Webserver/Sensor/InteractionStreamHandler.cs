@@ -101,8 +101,7 @@ namespace Microsoft.Samples.Kinect.Webserver.Sensor
 
         private static readonly Size[] UserViewerSupportedResolutions =
         {
-            new Size(640, 480), new Size(320, 240), new Size(160, 120),
-            new Size(128, 96), new Size(80, 60),
+            new Size(640, 480), // only support this resolution; we truncate to fit into 192x320.
         };
 
         /// <summary>
