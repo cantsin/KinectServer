@@ -1445,7 +1445,7 @@ var KinectUI = (function () {
                     updatePublicHandPointers();
                     break;
                 case "skeleton":
-                    for(var i=0; i<streamFrame.length; i++) {
+                    for(var i=0; i<streamFrame.skeletons.length; i++) {
                       if(streamFrame.skeletons[i].trackingId == KinectData.userid) {
                         KinectData.skeletonData = streamFrame.skeletons[i];
                         break;
