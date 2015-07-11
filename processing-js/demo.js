@@ -6,6 +6,7 @@ var KinectData = (function() {
   var resolution = width.toString() + "x" + height.toString();
   var isSensorConnected = false;
   var sensor = null;
+  var uiAdapter = null;
 
   // Update sensor state.
   function updateUserState(newIsSensorConnected, newEngagedUser, sensorToConfig) {
@@ -74,11 +75,12 @@ var KinectData = (function() {
         console.log("Warning: Could not connect to Kinect sensor.");
       }
     });
+  }
 
-    var uiAdapter = KinectUI.createAdapter(sensor);
+  function enable() {
+    // turns on client and events notification
 
-    uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, KinectData.silhouette);
-    uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, KinectData.userViewer);
+    uiAdapter = KinectUI.createAdapter(sensor);
 
     sensor.addEventHandler(function (event) {
       switch (event.category) {
@@ -93,12 +95,30 @@ var KinectData = (function() {
     });
   }
 
+  function enableViewer() {
+    if(!sensor.isConnectionEnabled) {
+      sensor.connect();
+      enable();
+    }
+    uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, KinectData.silhouette);
+  }
+
+  function enableSilhouette() {
+    if(!sensor.isConnectionEnabled) {
+      sensor.connect();
+      enable();
+    }
+    uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, KinectData.userViewer);
+  }
+
   // Kinect data, updated 60 times per second. Because this variable
   // will be global, it can be accessed by processing.js scripts.
   return {
     width: 192,
     height: 320,
     initialize: initialize,
+    enableViewer: enableViewer,
+    enableSilhouette: enableSilhouette,
     userid: null,            // the primary user id (as detected by the Kinect)
     userViewer: undefined,   // the primary user itself (minus the background)
     silhouette: undefined,   // the silhouette of the primary user (useful for background or shape detection)

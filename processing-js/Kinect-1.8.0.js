@@ -651,9 +651,6 @@ var Kinect = (function () {
             // If sensor for specified name doesn't exist yet, create it
             if (!sensorMap.hasOwnProperty(sensorName)) {
                 sensorMap[sensorName] = new KinectSensor(connectionUri + "/" + sensorName, onconnection);
-
-                // Start the sensors connected by default when they are requested
-                sensorMap[sensorName].connect();
             }
 
             return sensorMap[sensorName];
