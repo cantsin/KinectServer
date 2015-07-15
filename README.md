@@ -14,3 +14,5 @@ Modifications include:
   - A rudimentary cursor (follows left or right hand).
 
 For more information, please read [the README.md for Sanctuary of Self](https://github.com/timkettering/sos-display/blob/master/README.md).
+
+Also see the [Six Second Monks](http://sixsecondmonks.com/) website.
